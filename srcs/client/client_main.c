@@ -8,12 +8,6 @@ const char commands[8][10] = {
 	"",
 };
 
-typedef struct network
-{
-	struct sockaddr_in server_address;
-	int				   network_socket;
-} t_net;
-
 void fatal_error(const char *error_message)
 {
 	perror(error_message);
@@ -22,9 +16,9 @@ void fatal_error(const char *error_message)
 
 void closing_client(t_net *network)
 {
-	send(network->network_socket, "", sizeof(""), 0);
-	close(network->network_socket);
-	network->network_socket = -2;
+	send(network->network_fd, "", sizeof(""), 0);
+	close(network->network_fd);
+	network->network_fd = UNDEFINED_FD;
 	return;
 }
 
@@ -54,7 +48,7 @@ void get_user_message(t_net *network)
 	char *nl = strchr(user_message, '\n');
 	*nl = '\0';
 
-	printf("bytes sent : %ld\n", send(network->network_socket, user_message, strlen(user_message), 0));
+	printf("bytes sent : %ld\n", send(network->network_fd, user_message, strlen(user_message), 0));
 	free(user_message);
 	printf("message sent\n");
 }
@@ -114,29 +108,29 @@ void loop(t_net *network)
 int establish_connection(t_net *network)
 {
 	int				   status, client_fd;
-	struct sockaddr_in serv_addr;
+	struct sockaddr_in address;
 	if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		printf("\n Socket creation error \n");
 		return -1;
 	}
 
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(PORT);
+	address.sin_family = AF_INET;
+	address.sin_port = htons(PORT);
 
-	if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
+	if (inet_pton(AF_INET, "127.0.0.1", &address.sin_addr) <= 0) {
 		printf(
 			"\nInvalid address/ Address not supported \n");
 		return -1;
 	}
 
-	if ((status = connect(client_fd, (struct sockaddr *)&serv_addr,
-						  sizeof(serv_addr))) < 0) {
+	if ((status = connect(client_fd, (struct sockaddr *)&address,
+						  sizeof(address))) < 0) {
 		printf("\nConnection Failed \n");
 		return -1;
 	}
 
-	memcpy(&network->server_address, &serv_addr, sizeof(serv_addr));
-	network->network_socket = client_fd;
+	memcpy(&network->server_address, &address, sizeof(address));
+	network->network_fd = client_fd;
 
 	return 0;
 }

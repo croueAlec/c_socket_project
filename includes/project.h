@@ -21,4 +21,12 @@
 #define BUFFER_SIZE 512
 #define MAX_CMD 8
 
+#define UNDEFINED_FD -2
+
+typedef struct network
+{
+	struct sockaddr_in server_address;
+	int				   network_fd;
+} t_net;
+
 #endif
