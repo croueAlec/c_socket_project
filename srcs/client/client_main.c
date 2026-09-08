@@ -28,7 +28,20 @@ void lowercase_string(char *str)
 char *getstr(char *line)
 {
 	size_t size = 0;
-	getline(&line, &size, stdin);
+
+	int cmd_fd = dup(STDIN_FILENO);
+	if (cmd_fd < 0)
+		fatal_error("Fatal error : dup()");
+
+	FILE *dup_stdin = fdopen(cmd_fd, "r");
+	if (dup_stdin == NULL)
+		fatal_error("Fatal error : fdopen()");
+
+	if (getline(&line, &size, dup_stdin) == -1)
+		line = calloc(1, sizeof(char));
+
+	fclose(dup_stdin);
+	cmd_fd = UNDEFINED_FD;
 	return line;
 }
 
@@ -41,7 +54,6 @@ void get_user_message(t_net *network, bool is_value)
 	if (user_message == NULL) {
 		fatal_error("Malloc error : get_user_message()");
 	} else if (strlen(user_message) == 0) {
-		send(network->network_fd, "", 0, 0);
 		printf("input cancelled : 0 bytes sent\n");
 		return;
 	}
@@ -65,7 +77,7 @@ void get_user_message(t_net *network, bool is_value)
 	printf("message sent\n");
 }
 
-bool handle_cmd(t_net *network, char *cmd, int cmd_fd)
+bool handle_cmd(t_net *network, char *cmd)
 {
 	if (network == NULL)
 		lowercase_string(cmd);
@@ -74,12 +86,12 @@ bool handle_cmd(t_net *network, char *cmd, int cmd_fd)
 	int cmd_id = -1;
 	for (size_t i = 0; commands[i][0]; i++) {
 		if (strlen(cmd) == 0) {
-			cmd = 0;
+			cmd_id = 0;
 			break;
 		}
 
 		if (strncmp(cmd, commands[i], strlen(commands[i])) == 0) {
-			cmd = i;
+			cmd_id = i;
 			break;
 		}
 	}
@@ -109,7 +121,6 @@ bool handle_cmd(t_net *network, char *cmd, int cmd_fd)
 		return true;
 	}
 
-	(void)cmd_fd;
 	return true;
 }
 
@@ -117,18 +128,11 @@ void loop(t_net *network)
 {
 	int	  alive = true;
 	char *buffer = NULL;
-	int	  cmd_fd = UNDEFINED_FD;
 
 	while (alive) {
-		if (cmd_fd == UNDEFINED_FD) {
-			cmd_fd = dup(STDIN_FILENO);
-			if (cmd_fd < 0)
-				fatal_error("Fatal error : dup()");
-		}
-
 		printf("Commands : q(uit), s(end), v(al)\n> ");
 		buffer = getstr(buffer);
-		if (handle_cmd(network, buffer, cmd_fd) == false)
+		if (handle_cmd(network, buffer) == false)
 			break;
 	}
 }
