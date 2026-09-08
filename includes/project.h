@@ -23,12 +23,38 @@
 
 #define UNDEFINED_FD -2
 
+enum PACKET_TYPE
+{
+	NAMECARD = 1,
+	VAL = 2,
+};
+
 typedef struct network
+
 {
 	struct sockaddr_in server_address;
 	int				   network_fd;
 } t_net;
 
+typedef struct namecard
+{
+	char name[BUFFER_SIZE];
+} t_namecard;
+
+typedef struct packet
+{
+	uint8_t type;
+
+	union
+	{
+		t_namecard namecard;
+		int		   val;
+	} data;
+
+} t_packet;
+
+void fatal_error(const char *error_message);
+void read_packet(t_packet *packet);
 void common(void);
 
 #endif

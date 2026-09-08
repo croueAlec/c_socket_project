@@ -8,12 +8,6 @@ const char commands[8][10] = {
 	"",
 };
 
-void fatal_error(const char *error_message)
-{
-	perror(error_message);
-	exit(errno);
-}
-
 void close_client(t_net *network)
 {
 	send(network->network_fd, "", sizeof(""), 0);

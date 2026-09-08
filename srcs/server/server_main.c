@@ -2,12 +2,6 @@
 
 // int client_list[MAX_CLIENT];
 
-void fatal_error(const char *error_message)
-{
-	perror(error_message);
-	exit(errno);
-}
-
 void init_server(t_net *network)
 {
 
