@@ -67,7 +67,8 @@ INCLUDES := $(INCS_DIR)
 INCLUDES_FLAGS := $(addprefix -I , $(INCLUDES))
 
 CLIENT_SRC :=	$(addprefix $(CLIENT_DIR)/, \
-	client_main.c )
+	client_main.c \
+	client_utils.c )
 
 SERVER_SRC := $(addprefix $(SERVER_DIR)/, \
 	server_main.c )

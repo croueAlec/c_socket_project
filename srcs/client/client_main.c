@@ -1,4 +1,5 @@
 #include "project.h"
+#include "client.h"
 
 const char commands[8][10] = {
 	"q",
@@ -9,21 +10,6 @@ const char commands[8][10] = {
 	"val",
 	"",
 };
-
-void close_client(t_net *network)
-{
-	send(network->network_fd, "", sizeof(""), 0);
-	close(network->network_fd);
-	network->network_fd = UNDEFINED_FD;
-	return;
-}
-
-void lowercase_string(char *str)
-{
-	for (size_t i = 0; str && str[i]; i++) {
-		str[i] = tolower(str[i]);
-	}
-}
 
 char *getstr(char *line)
 {
@@ -79,9 +65,7 @@ void get_user_message(t_net *network, bool is_value)
 
 bool handle_cmd(t_net *network, char *cmd)
 {
-	if (network == NULL)
-		lowercase_string(cmd);
-	// should trim the strings
+	clean_string(cmd);
 
 	int cmd_id = -1;
 	for (size_t i = 0; commands[i][0]; i++) {
@@ -135,36 +119,6 @@ void loop(t_net *network)
 		if (handle_cmd(network, buffer) == false)
 			break;
 	}
-}
-
-int establish_connection(t_net *network)
-{
-	int				   status, client_fd;
-	struct sockaddr_in address;
-	if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-		printf("\n Socket creation error \n");
-		return -1;
-	}
-
-	address.sin_family = AF_INET;
-	address.sin_port = htons(PORT);
-
-	if (inet_pton(AF_INET, "127.0.0.1", &address.sin_addr) <= 0) {
-		printf(
-			"\nInvalid address/ Address not supported \n");
-		return -1;
-	}
-
-	if ((status = connect(client_fd, (struct sockaddr *)&address,
-						  sizeof(address))) < 0) {
-		printf("\nConnection Failed \n");
-		return -1;
-	}
-
-	memcpy(&network->server_address, &address, sizeof(address));
-	network->network_fd = client_fd;
-
-	return 0;
 }
 
 int main(int argc, const char *argv[])
