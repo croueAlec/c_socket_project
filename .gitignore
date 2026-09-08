@@ -1,9 +1,11 @@
+# Program name
 a.out
-
 client
 server
 
+# Sources
+objs/*
 !srcs/*
 
-
+# Misc
 test.c
