@@ -14,7 +14,7 @@ void fatal_error(const char *error_message)
 	exit(errno);
 }
 
-void closing_client(t_net *network)
+void close_client(t_net *network)
 {
 	send(network->network_fd, "", sizeof(""), 0);
 	close(network->network_fd);
@@ -151,7 +151,7 @@ int main(int argc, const char *argv[])
 
 	loop(&network);
 
-	closing_client(&network);
+	close_client(&network);
 
 	(void)argc;
 	(void)argv;
