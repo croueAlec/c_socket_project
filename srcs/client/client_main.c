@@ -59,7 +59,7 @@ void get_user_message(t_net *network)
 	printf("message sent\n");
 }
 
-bool handle_cmd(t_net *network, char *buffer)
+bool handle_cmd(t_net *network, char *buffer, int cmd_fd)
 {
 	lowercase_string(buffer);
 	// should trim the strings
@@ -103,10 +103,18 @@ void loop(t_net *network)
 {
 	int	  alive = true;
 	char *buffer = NULL;
+	int	  cmd_fd = UNDEFINED_FD;
+
 	while (alive) {
+		if (cmd_fd == UNDEFINED_FD) {
+			cmd_fd = dup(STDIN_FILENO);
+			if (cmd_fd < 0)
+				fatal_error("Fatal error : dup()");
+		}
+
 		printf("Commands : q(uit), s(end)\n> ");
 		buffer = getstr(buffer);
-		if (handle_cmd(network, buffer) == false)
+		if (handle_cmd(network, buffer, cmd_fd) == false)
 			break;
 	}
 }
