@@ -42,8 +42,14 @@ void get_user_message(t_net *network)
 	printf("Input user message : ");
 
 	user_message = getstr(user_message);
-	if (user_message == NULL)
+	if (user_message == NULL) {
+
 		fatal_error("Malloc error : get_user_message()");
+	} else if (strlen(user_message) == 0) {
+		send(network->network_fd, "", 0, 0);
+		printf("input cancelled : 0 bytes sent\n");
+		return;
+	}
 
 	char *nl = strchr(user_message, '\n');
 	*nl = '\0';
