@@ -5,6 +5,8 @@ const char commands[8][10] = {
 	"quit",
 	"s",
 	"send",
+	"v",
+	"val",
 	"",
 };
 
@@ -30,7 +32,7 @@ char *getstr(char *line)
 	return line;
 }
 
-void get_user_message(t_net *network)
+void get_user_message(t_net *network, bool is_value)
 {
 	char *user_message = NULL;
 	printf("Input user message : ");
@@ -47,45 +49,63 @@ void get_user_message(t_net *network)
 	char *nl = strchr(user_message, '\n');
 	*nl = '\0';
 
-	printf("bytes sent : %ld\n", send(network->network_fd, user_message, strlen(user_message), 0));
+	t_packet packet = {0};
+	if (is_value == false) {
+		printf("sending namecard\n");
+		packet.type = NAMECARD;
+		memcpy(packet.data.namecard.name, user_message, strlen(user_message));
+	} else {
+		printf("sending val\n");
+		packet.type = VAL;
+		packet.data.val = atoi(user_message);
+	}
+
+	printf("bytes sent : %ld\n", send(network->network_fd, &packet, sizeof(packet), 0));
 	free(user_message);
 	printf("message sent\n");
 }
 
-bool handle_cmd(t_net *network, char *buffer, int cmd_fd)
+bool handle_cmd(t_net *network, char *cmd, int cmd_fd)
 {
-	lowercase_string(buffer);
+	if (network == NULL)
+		lowercase_string(cmd);
 	// should trim the strings
 
-	int cmd = -1;
+	int cmd_id = -1;
 	for (size_t i = 0; commands[i][0]; i++) {
-		if (strlen(buffer) == 0) {
+		if (strlen(cmd) == 0) {
 			cmd = 0;
 			break;
 		}
 
-		if (strncmp(buffer, commands[i], strlen(commands[i])) == 0) {
+		if (strncmp(cmd, commands[i], strlen(commands[i])) == 0) {
 			cmd = i;
 			break;
 		}
 	}
-	switch (cmd) {
+	switch (cmd_id) {
 	case -1:
-		printf("invalid command : %s\n", buffer);
-		free(buffer);
+		printf("invalid command : %s\n", cmd);
+		free(cmd);
 		return true;
 
 	case 0:
 	case 1:
 		printf("Quitting...\n");
-		free(buffer);
+		free(cmd);
 		return false;
 		break;
 
 	case 2:
 	case 3:
-		get_user_message(network);
-		free(buffer);
+		get_user_message(network, false);
+		free(cmd);
+		return true;
+
+	case 4:
+	case 5:
+		get_user_message(network, true);
+		free(cmd);
 		return true;
 	}
 
@@ -106,7 +126,7 @@ void loop(t_net *network)
 				fatal_error("Fatal error : dup()");
 		}
 
-		printf("Commands : q(uit), s(end)\n> ");
+		printf("Commands : q(uit), s(end), v(al)\n> ");
 		buffer = getstr(buffer);
 		if (handle_cmd(network, buffer, cmd_fd) == false)
 			break;

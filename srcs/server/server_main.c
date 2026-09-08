@@ -48,9 +48,12 @@ void handle_clients(t_net *network)
 		exit(EXIT_FAILURE);
 	}
 
-	char read_buffer[BUFFER_SIZE] = {0};
+	char read_buffer[BUFFER_SIZE + 24] = {0};
 	while (recv(new_socket, &read_buffer, BUFFER_SIZE - 1, 0) > 0) {
-		printf("%s\n", read_buffer);
+		t_packet packet = {0};
+		memcpy(&packet, read_buffer, (sizeof(packet)));
+		read_packet(&packet);
+		// printf("%s\n", read_buffer);
 		bzero(read_buffer, BUFFER_SIZE);
 	}
 
