@@ -67,6 +67,7 @@ void handle_clients(t_net *network)
 int main(int argc, const char *argv[])
 {
 	t_net network = {0};
+	common();
 
 	init_server(&network);
 

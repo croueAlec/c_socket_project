@@ -43,7 +43,6 @@ void get_user_message(t_net *network)
 
 	user_message = getstr(user_message);
 	if (user_message == NULL) {
-
 		fatal_error("Malloc error : get_user_message()");
 	} else if (strlen(user_message) == 0) {
 		send(network->network_fd, "", 0, 0);
@@ -96,6 +95,7 @@ bool handle_cmd(t_net *network, char *buffer, int cmd_fd)
 		return true;
 	}
 
+	(void)cmd_fd;
 	return true;
 }
 
@@ -151,6 +151,7 @@ int establish_connection(t_net *network)
 
 int main(int argc, const char *argv[])
 {
+	common();
 	printf("Starting client\n");
 	t_net network = {0};
 

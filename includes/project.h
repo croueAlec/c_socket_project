@@ -29,4 +29,6 @@ typedef struct network
 	int				   network_fd;
 } t_net;
 
+void common(void);
+
 #endif
