@@ -47,7 +47,8 @@ void get_user_message(t_net *network, bool is_value)
 	char *nl = strchr(user_message, '\n');
 	*nl = '\0';
 
-	/*
+	printf("sending user message : [%s] of size [%ld]\n", user_message, strlen(user_message));
+
 	t_packet packet = {0};
 	if (is_value == false) {
 		printf("sending namecard\n");
@@ -58,10 +59,8 @@ void get_user_message(t_net *network, bool is_value)
 		packet.type = VAL;
 		packet.data.val = atoi(user_message);
 	}
-	*/
 
-	// printf("bytes sent : %ld\n", send(network->network_fd, &packet, sizeof(packet), 0));
-	printf("bytes sent : %ld\n", send(network->network_fd, &user_message, BUFFER_SIZE, 0));
+	printf("bytes sent : %ld\n", send(network->network_fd, &packet, BUFFER_SIZE, 0));
 	free(user_message);
 	printf("message sent\n");
 	(void)is_value;

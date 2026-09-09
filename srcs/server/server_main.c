@@ -6,7 +6,6 @@ struct pollfd clients[MAX_CLIENT] = {0};
 
 void init_server(t_net *network)
 {
-
 	int				   server_fd = UNDEFINED_FD;
 	struct sockaddr_in address;
 	int				   opt = 1;
@@ -42,36 +41,11 @@ void init_server(t_net *network)
 	network->network_fd = server_fd;
 }
 
-void handle_clients(t_net *network)
-{
-	int		  new_socket;
-	socklen_t addrlen = sizeof(network->server_address);
-
-	if ((new_socket = accept(network->network_fd, (struct sockaddr *)&network->server_address,
-							 &addrlen)) < 0) {
-		perror("accept");
-		exit(EXIT_FAILURE);
-	}
-
-	char read_buffer[BUFFER_SIZE + 24] = {0};
-	while (recv(new_socket, &read_buffer, BUFFER_SIZE - 1, 0) > 0) {
-		t_packet packet = {0};
-		memcpy(&packet, read_buffer, (sizeof(packet)));
-		read_packet(&packet);
-		// printf("%s\n", read_buffer);
-		bzero(read_buffer, BUFFER_SIZE);
-	}
-
-	close(new_socket);
-	new_socket = UNDEFINED_FD;
-}
-
 int accept_clients(t_net *network, int nfds)
 {
 	printf("client search : begin\n");
 	int new_client_fd = UNDEFINED_FD;
 	do {
-		printf("client search : new\n");
 		new_client_fd = accept(network->network_fd, NULL, NULL); // check accept() parameters
 		if (new_client_fd < 0) {
 			if (errno != EWOULDBLOCK) {
@@ -91,19 +65,26 @@ int accept_clients(t_net *network, int nfds)
 	return nfds;
 }
 
-void tmp_read(t_net *network, const struct pollfd *client)
+void receive_message(t_net *network, const struct pollfd *client)
 {
-	char buffer[512 * 2];
-	int	 bytes_received = recv(client->fd, buffer, sizeof(buffer), 0);
-	if (bytes_received < 0) {
-		fatal_error("Fatal error : recv() tmp_error()");
-	} else if (bytes_received == 0) {
-		printf("connection closed\n");
-		return;
+	char read_buffer[BUFFER_SIZE + 24] = {0};
+	int	 bytes_received = 0;
+	while (true) {
+		bytes_received = recv(client->fd, &read_buffer, BUFFER_SIZE, 0);
+		if (bytes_received < 0) {
+			fatal_error("Fatal error : recv() tmp_error()");
+		} else if (bytes_received == 0) {
+			printf("connection closed\n");
+			return;
+		}
+
+		printf("bytes received : %d\n", bytes_received);
+		t_packet packet = {0};
+		memcpy(&packet, read_buffer, (sizeof(packet)));
+		read_packet(&packet);
+		bzero(read_buffer, BUFFER_SIZE);
 	}
 
-	printf("bytes received : %d\n", bytes_received);
-	printf("[%s]\n", buffer);
 	(void)network;
 }
 
@@ -134,7 +115,7 @@ void loop(t_net *network)
 				nfds = accept_clients(network, nfds);
 			} else {
 				printf("  Descriptor %d is readable\n", clients[i].fd);
-				tmp_read(network, &clients[i]);
+				receive_message(network, &clients[i]);
 			}
 		}
 
