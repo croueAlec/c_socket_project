@@ -103,7 +103,7 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	@echo "$<" | grep -q "common" && \
  		printf "$(PURPLE)- Compiling$(DEFAULT) $(BWHITE)common$(DEFAULT) %s\n" "$<" || \
  		printf "$(CYAN)- Compiling$(DEFAULT) %s\n" "$<"
-	@cd $(SRCS_DIR) && find . -type d -exec mkdir -p ../$(OBJS_DIR)/{} \; && cd ..
+	@(cd $(SRCS_DIR) && find . -type d -exec mkdir -p ../$(OBJS_DIR)/{} \;)
 	@$(CC) $(DEP_FLAGS) $(COMPIL_DEFINES) $(CFLAGS) $(INCLUDES_FLAGS) -c $< -o $@
 
 clean:
