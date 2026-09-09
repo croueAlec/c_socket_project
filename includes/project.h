@@ -13,6 +13,7 @@
 #include <netinet/in.h>
 #include <sys/select.h>
 #include <arpa/inet.h>
+#include <poll.h>
 
 #define MAX_CLIENT 2
 #define ADDRESS 2130706433 // 127.0.0.1
