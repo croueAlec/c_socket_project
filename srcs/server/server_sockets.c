@@ -1,0 +1,79 @@
+#include "project.h"
+#include "server.h"
+
+void init_server(t_net *network)
+{
+	int				   server_fd = UNDEFINED_FD;
+	struct sockaddr_in address;
+	int				   opt = 1;
+
+	if ((server_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) < 0) {
+		perror("socket failed");
+		exit(EXIT_FAILURE);
+	}
+
+	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {
+		perror("setsockopt");
+		exit(EXIT_FAILURE);
+	}
+	address.sin_family = AF_INET;
+	address.sin_addr.s_addr = inet_addr("127.0.0.1");
+	address.sin_port = htons(PORT);
+
+	if (bind(server_fd, (struct sockaddr *)&address,
+			 sizeof(address)) < 0) {
+		perror("bind failed");
+		exit(EXIT_FAILURE);
+	}
+
+	if (listen(server_fd, MAX_CLIENT) < 0) {
+		perror("listen");
+		exit(EXIT_FAILURE);
+	}
+
+	clients[0].fd = server_fd;
+	clients[0].events = POLLIN;
+
+	memcpy(&network->server_address, &address, sizeof(address));
+	network->network_fd = server_fd;
+}
+
+int accept_clients(t_net *network, int nfds)
+{
+	printf("client search : begin\n");
+	int new_client_fd = UNDEFINED_FD;
+	do {
+		new_client_fd = accept(network->network_fd, NULL, NULL); // check accept() parameters
+		if (new_client_fd < 0) {
+			if (errno != EWOULDBLOCK) {
+				fatal_error("Fatal error : accept()");
+			}
+			break;
+		}
+
+		printf("client search : new added : %d\n", new_client_fd);
+		clients[nfds].fd = new_client_fd;
+		clients[nfds].events = POLLIN;
+		nfds++;
+	} while (new_client_fd != -1);
+
+	printf("client search : end\n");
+
+	return nfds;
+}
+
+void close_client(struct pollfd *clients, int client_index, int nfds)
+{
+	close(clients[client_index].fd);
+	clients[client_index].fd = UNDEFINED_FD;
+
+	for (int i = 0; i < nfds; i++) {
+		if (clients[i].fd == -1) {
+			for (int j = i; j < nfds; j++) {
+				clients[j].fd = clients[j + 1].fd;
+			}
+			i--;
+			nfds--;
+		}
+	}
+}

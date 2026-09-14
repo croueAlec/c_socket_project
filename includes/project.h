@@ -15,20 +15,17 @@
 #include <arpa/inet.h>
 #include <poll.h>
 
+#define BUFFER_SIZE 512
+
+#include "game.h"
+
 #define MAX_CLIENT 2
 #define ADDRESS 2130706433 // 127.0.0.1
 #define PORT 8080
 
-#define BUFFER_SIZE 512
 #define MAX_CMD 8
 
 #define UNDEFINED_FD -2
-
-enum PACKET_TYPE
-{
-	NAMECARD = 1,
-	VAL = 2,
-};
 
 typedef struct network
 
@@ -37,25 +34,22 @@ typedef struct network
 	int				   network_fd;
 } t_net;
 
-typedef struct namecard
+typedef struct game_state
 {
-	char name[BUFFER_SIZE];
-} t_namecard;
-
-typedef struct packet
-{
-	uint8_t type;
+	bool   exists;
+	player pl_1;
 
 	union
 	{
-		t_namecard namecard;
-		int		   val;
-	} data;
+		player pl_2;
+		enemy  mob;
+	};
 
-} t_packet;
+} t_game_state;
+
+#include "instructions.h"
 
 void fatal_error(const char *error_message);
-void read_packet(t_packet *packet);
 void common(void);
 
 #endif

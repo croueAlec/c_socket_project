@@ -67,13 +67,19 @@ INCLUDES := $(INCS_DIR)
 INCLUDES_FLAGS := $(addprefix -I , $(INCLUDES))
 
 CLIENT_SRC :=	$(addprefix $(CLIENT_DIR)/, \
+	client_commands.c \
+	client_instructions.c \
 	client_main.c \
+	client_sockets.c \
 	client_utils.c )
 
 SERVER_SRC := $(addprefix $(SERVER_DIR)/, \
-	server_main.c )
+	server_instructions.c \
+	server_main.c \
+	server_sockets.c )
 
 COMMON_SRC := $(addprefix $(COMMON_DIR)/, \
+	common_instructions.c \
 	common.c )
 
 CLIENT_OBJ := $(patsubst %.c,$(OBJS_DIR)/%.o,$(CLIENT_SRC))
