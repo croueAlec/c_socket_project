@@ -1,7 +1,26 @@
 #include "project.h"
 #include "client.h"
 
-char *getstr(char *line)
+const t_command_name command_names[] = {
+	{"q", "quit"  },
+	{"a", "action"},
+	{"l", "login" },
+	{"",  ""	  },
+};
+
+static bool compare_commands(const char *cmd, size_t index)
+{
+	size_t len = strlen(cmd);
+
+	if (strncmp(cmd, command_names[index].letter, len) == 0)
+		return true;
+	else if (strncmp(cmd, command_names[index].string, len) == 0)
+		return true;
+	else
+		return false;
+}
+
+static char *getstr(char *line)
 {
 	size_t size = 0;
 
@@ -21,7 +40,7 @@ char *getstr(char *line)
 	return line;
 }
 
-void get_user_message(t_net *network, char *message)
+void get_user_string(t_net *network, char *message, size_t size)
 {
 	if (message == NULL)
 		return;
@@ -31,7 +50,7 @@ void get_user_message(t_net *network, char *message)
 
 	user_message = getstr(user_message);
 	if (user_message == NULL) {
-		fatal_error("Malloc error : get_user_message()");
+		fatal_error("Malloc error : get_user_string()");
 	} else if (strlen(user_message) == 0) {
 		printf("input cancelled : 0 bytes sent\n");
 		return;
@@ -40,7 +59,9 @@ void get_user_message(t_net *network, char *message)
 	char *nl = strchr(user_message, '\n');
 	*nl = '\0';
 
-	memcpy(message, user_message, strlen(user_message));
+	size = (size < strlen(user_message)) ? size : strlen(user_message);
+
+	memcpy(message, user_message, size);
 	free(user_message);
 	(void)network;
 }
@@ -50,42 +71,34 @@ bool handle_cmd(t_net *network, char *cmd)
 	clean_string(cmd);
 
 	int cmd_id = -1;
-	for (size_t i = 0; command_names[i][0]; i++) {
+	for (size_t i = 0; strlen(command_names[i].letter); i++) {
 		if (strlen(cmd) == 0) {
 			cmd_id = 0;
 			break;
 		}
 
-		if (strncmp(cmd, command_names[i], strlen(command_names[i])) == 0) {
+		if (compare_commands(cmd, i)) {
 			cmd_id = i;
 			break;
 		}
 	}
+
 	switch (cmd_id) {
 	case -1:
 		printf("invalid command : %s\n", cmd);
-		free(cmd);
 		return true;
 
 	case 0: // quit
-	case 1:
-		send_client_instruction(network, CLOSE, "Close", NULL);
-		printf("Quitting...\n");
-		free(cmd);
+		quit(network);
 		return false;
 		break;
 
-	case 2: // send
-	case 3:
-		get_user_message(network, NULL);
-		free(cmd);
+	case 1: // action
+		action(network);
 		return true;
 
-	case 4: // val
-	case 5:
-		send_client_instruction(network, ACTION, "Action", NULL);
-		// get_user_message(network, true);
-		free(cmd);
+	case 2: // login
+		login(network);
 		return true;
 	}
 

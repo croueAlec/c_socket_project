@@ -1,24 +1,19 @@
 #include "project.h"
 #include "client.h"
 
-const char command_names[8][10] = {
-	"q",
-	"quit",
-	"s",
-	"send",
-	"v",
-	"val",
-	"",
-};
+bool		 logged_in = false;
+bool		 is_player_1 = false;
+t_game_state state = {0};
 
 void loop(t_net *network)
 {
-	int	  alive = true;
-	char *buffer = NULL;
+	int	 alive = true;
+	char buffer[BUFFER_SIZE + 1] = {0};
 
 	while (alive) {
-		printf("Commands : q(uit), s(end), v(al)\n> ");
-		buffer = getstr(buffer);
+		bzero(buffer, BUFFER_SIZE);
+		printf("Commands : q(uit), a(ction), l(ogin)\n> ");
+		get_user_string(network, buffer, BUFFER_SIZE);
 		if (handle_cmd(network, buffer) == false)
 			break;
 	}

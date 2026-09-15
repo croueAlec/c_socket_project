@@ -5,6 +5,8 @@ int count = 0;
 
 struct pollfd clients[MAX_CLIENT] = {0};
 
+player players[MAX_CLIENT] = {0};
+
 void loop(t_net *network)
 {
 	int current_size = 0;

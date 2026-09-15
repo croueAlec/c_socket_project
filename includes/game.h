@@ -122,12 +122,12 @@ typedef struct character
 
 typedef struct player
 {
-	const uint8_t id;
-	char		  name[MAX_NAME_LENGTH + 1];
-	character	  character;
-	uint8_t		  health_points;
-	size_t		  xp; /* xp required to level up */
-	uint8_t		  level;
+	const int id;
+	char	  name[MAX_NAME_LENGTH + 1];
+	character character;
+	uint8_t	  health_points;
+	size_t	  xp; /* xp required to level up */
+	uint8_t	  level;
 } player;
 
 /* Externs */

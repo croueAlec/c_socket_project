@@ -49,6 +49,5 @@ typedef struct game_state
 #include "instructions.h"
 
 void fatal_error(const char *error_message);
-void common(void);
 
 #endif
