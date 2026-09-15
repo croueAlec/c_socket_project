@@ -19,7 +19,7 @@
 
 #include "game.h"
 
-#define MAX_CLIENT 2
+#define MAX_CLIENT 2 + 1 // +1 for server
 #define ADDRESS 2130706433 // 127.0.0.1
 #define PORT 8080
 

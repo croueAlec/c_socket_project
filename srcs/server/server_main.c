@@ -9,11 +9,11 @@ player players[MAX_CLIENT] = {0};
 
 void loop(t_net *network)
 {
-	int current_size = 0;
-	int nfds = 1;
+	int	   current_size = 0;
+	nfds_t nfds = 1;
 	do {
 		current_size = nfds;
-		int rc = poll(clients, nfds, (30 * 60 * 3000)); // timeout == 3 minutes
+		int rc = poll(clients, nfds, (3 * 60 * 1000)); // timeout == 3 minutes
 		if (rc < 0) {
 			fatal_error("Fatal error : poll()");
 		} else if (rc == 0) {
@@ -24,7 +24,7 @@ void loop(t_net *network)
 			if (clients[i].revents == 0)
 				continue;
 
-			if (clients[i].revents != POLLIN) {
+			if ((clients[i].revents & POLLIN) == 0) {
 				printf("  Error! revents = %d\n", clients[i].revents);
 				fatal_error("Fatal error : revents");
 			}
@@ -39,7 +39,6 @@ void loop(t_net *network)
 				break;
 			}
 		}
-
 	} while (true);
 }
 
@@ -51,7 +50,6 @@ int main(int argc, const char *argv[])
 
 	init_server(&network);
 
-	// handle_clients(&network);
 	loop(&network);
 
 	close(network.network_fd);

@@ -40,7 +40,6 @@ void init_server(t_net *network)
 
 int accept_clients(t_net *network, int nfds)
 {
-	printf("client search : begin\n");
 	int new_client_fd = UNDEFINED_FD;
 	do {
 		new_client_fd = accept(network->network_fd, NULL, NULL); // check accept() parameters
@@ -51,19 +50,19 @@ int accept_clients(t_net *network, int nfds)
 			break;
 		}
 
-		printf("client search : new added : %d\n", new_client_fd);
+		printf("new client added : %d\n", new_client_fd);
 		clients[nfds].fd = new_client_fd;
 		clients[nfds].events = POLLIN;
 		nfds++;
 	} while (new_client_fd != -1);
 
-	printf("client search : end\n");
-
 	return nfds;
 }
 
+// TODO: fix close client
 void close_client(struct pollfd *clients, int client_index, int nfds)
 {
+	printf("closing client %d\n", clients[client_index].fd);
 	close(clients[client_index].fd);
 	clients[client_index].fd = UNDEFINED_FD;
 

@@ -6,6 +6,9 @@
 extern int			 count;
 extern struct pollfd clients[MAX_CLIENT];
 
+/* Utils */
+void print_pollfd();
+
 /* Sockets */
 void init_server(t_net *network);
 int	 accept_clients(t_net *network, int nfds);

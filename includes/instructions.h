@@ -29,7 +29,7 @@ typedef int (*inst_cmd_handler)(t_instruction *instruction);
 
 typedef struct instruction_command
 {
-	t_inst_type		 command;
+	t_inst_type		 command_type;
 	inst_cmd_handler handler;
 
 } t_inst_cmd;
@@ -39,8 +39,8 @@ extern const t_inst_cmd commands[INSTRUCTION_COUNT];
 void send_client_instruction(t_net *network, t_inst_type type, const char *message, t_game_state *state);
 void send_server_instruction(t_net *network, t_inst_type type, const char *message, t_game_state *state);
 
-int	 send_instruction(t_net *network, t_instruction *instruction);
-int	 handle_instruction(t_instruction *instruction);
-bool receive_instruction(t_net *network, const struct pollfd *client);
+int send_instruction(t_net *network, t_instruction *instruction);
+int handle_instruction(t_instruction *instruction);
+int receive_instruction(t_net *network, const struct pollfd *client);
 
 #endif

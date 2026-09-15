@@ -8,6 +8,16 @@ int action_command(t_instruction *instruction)
 	return ACTION;
 }
 
+int login_command(t_instruction *instruction)
+{
+	printf("This is the 'Login' server side command\n");
+	printf("Message : %s\n", instruction->message);
+	printf("Username : %s\n", instruction->state.pl_1.name);
+
+	(void)instruction;
+	return LOGIN;
+}
+
 int close_command(t_instruction *instruction)
 {
 	printf("This is the 'Close' server side command\n");
@@ -17,8 +27,9 @@ int close_command(t_instruction *instruction)
 }
 
 const t_inst_cmd commands[INSTRUCTION_COUNT] = {
-	{ACTION, action_command},
 	{CLOSE,	 close_command },
+	{LOGIN,	 login_command },
+	{ACTION, action_command},
 	{NONE,	 NULL		   },
 };
 
@@ -49,7 +60,7 @@ void send_server_instruction(t_net *network, t_inst_type type, const char *messa
 		break;
 	}
 
-	send_instruction(network, &instruction);
+	printf("bytes sent : %d\n", send_instruction(network, &instruction));
 	(void)state;
 
 	return;

@@ -25,10 +25,18 @@ void action(t_net *network)
 	send_client_instruction(network, ACTION, "Action", NULL);
 }
 
+void print_pending_instruction(t_instruction *instruction)
+{
+	printf("Type : %d\n", instruction->type);
+	printf("Message : %s\n", instruction->message);
+	printf("Player 1 name : %s\n", instruction->state.pl_1.name);
+}
+
 void login(t_net *network)
 {
 	state.exists = true;
-	player *me = (is_player_1) ? &state.pl_1 : &state.pl_2;
+	// player *me = (is_player_1) ? &state.pl_1 : &state.pl_2;
+	player *me = &state.pl_1;
 
 	get_user_string(network, me->name, MAX_NAME_LENGTH);
 
@@ -38,12 +46,14 @@ void login(t_net *network)
 void send_client_instruction(t_net *network, t_inst_type type, const char *message, t_game_state *state)
 {
 	t_instruction instruction = {0};
+	memcpy(&instruction.message, "This is a message", strlen("This is a message"));
 
 	if (message == NULL) {
 		;
 	}
 
 	instruction.type = type;
+	memcpy(&instruction.state, state, sizeof(t_game_state));
 
 	switch (type) {
 	case END:
@@ -61,7 +71,7 @@ void send_client_instruction(t_net *network, t_inst_type type, const char *messa
 		break;
 	}
 
-	printf("bytes sent : %d\n", send_instruction(network, &instruction));
+	printf("bytes sent : %d to server fd %d\n", send_instruction(network, &instruction), network->network_fd);
 	(void)state;
 
 	return;

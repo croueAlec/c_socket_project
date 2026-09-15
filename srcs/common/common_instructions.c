@@ -7,6 +7,7 @@ int send_instruction(t_net *network, t_instruction *instruction)
 	if (bytes_sent < 0) {
 		fatal_error("Fatal error : send()");
 	}
+	(void)instruction;
 
 	return bytes_sent;
 }
@@ -84,8 +85,9 @@ int send_instruction(t_net *network, t_instruction *instruction)
 int handle_instruction(t_instruction *instruction)
 {
 	size_t i = 0;
-	while (commands[i].command != instruction->type) {
-		if (commands[i].command != NONE)
+	while (commands[i].command_type != instruction->type) {
+		printf("trying command %d\n", commands[i].command_type);
+		if (commands[i].command_type == NONE)
 			return -1; // error
 		i++;
 	}
@@ -93,18 +95,23 @@ int handle_instruction(t_instruction *instruction)
 	return (commands[i].handler(instruction));
 }
 
-bool receive_instruction(t_net *network, const struct pollfd *client)
+int receive_instruction(t_net *network, const struct pollfd *client)
 {
 	t_instruction instruction = {0};
+	char		  buffer[sizeof(t_instruction)] = {0};
+	int			  bytes_received = 0;
 
-	int bytes_received = recv(client->fd, &instruction, sizeof(t_instruction), 0);
-	if (bytes_received < 0) {
-		fatal_error("Fatal error : receive_instruction()");
-	}
+	do {
+		bytes_received = recv(client->fd, &buffer[bytes_received], sizeof(t_instruction), 0);
+		if (bytes_received < 0) {
+			fatal_error("Fatal error : receive_instruction()");
+		}
+	} while (errno != EAGAIN);
+
+	memcpy(&instruction, buffer, sizeof(instruction));
 
 	printf("instruction size : %ld\tbytes received :%d\n", sizeof(t_instruction), bytes_received);
 
 	(void)network;
 	return (handle_instruction(&instruction));
-	// return (handle_server_instruction(&instruction));
 }
