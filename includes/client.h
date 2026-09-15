@@ -17,6 +17,7 @@ extern const t_command_name command_names[];
 
 /* Utils */
 void clean_string(char *str);
+void print_prompt(void);
 
 /* Sockets */
 void close_client(t_net *network);

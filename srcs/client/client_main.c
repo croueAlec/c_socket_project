@@ -12,7 +12,7 @@ void loop(t_net *network)
 
 	while (alive) {
 		bzero(buffer, BUFFER_SIZE);
-		printf("Commands : q(uit), a(ction), l(ogin)\n> ");
+		print_prompt();
 		get_user_string(network, buffer, BUFFER_SIZE);
 		if (handle_cmd(network, buffer) == false)
 			break;

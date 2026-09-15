@@ -37,3 +37,14 @@ void clean_string(char *str)
 
 	lowercase_string(str);
 }
+
+void print_prompt(void)
+{
+	printf("Commands : ");
+	for (size_t i = 0; strlen(command_names[i].letter); i++) {
+		if (i != 0)
+			printf(", ");
+		printf("%c(%s)", command_names[i].letter[0], &command_names[i].string[1]);
+	}
+	printf("\n> ");
+}
