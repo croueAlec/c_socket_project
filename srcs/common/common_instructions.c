@@ -2,11 +2,13 @@
 
 int send_instruction(t_net *network, t_instruction *instruction)
 {
-	if (send(network->network_fd, instruction, sizeof(instruction), 0) < 0) {
+	int bytes_sent = send(network->network_fd, instruction, sizeof(t_instruction), 0);
+
+	if (bytes_sent < 0) {
 		fatal_error("Fatal error : send()");
 	}
 
-	return 0;
+	return bytes_sent;
 }
 
 /* static void set_instruction_message(t_instruction *instruction, const char *message)
@@ -95,12 +97,12 @@ bool receive_instruction(t_net *network, const struct pollfd *client)
 {
 	t_instruction instruction = {0};
 
-	int bytes_received = recv(client->fd, &instruction, sizeof(instruction), 0);
+	int bytes_received = recv(client->fd, &instruction, sizeof(t_instruction), 0);
 	if (bytes_received < 0) {
 		fatal_error("Fatal error : receive_instruction()");
 	}
 
-	printf("instruction size : %ld\tbytes received :%d\n", sizeof(instruction), bytes_received);
+	printf("instruction size : %ld\tbytes received :%d\n", sizeof(t_instruction), bytes_received);
 
 	(void)network;
 	return (handle_instruction(&instruction));

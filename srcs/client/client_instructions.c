@@ -61,7 +61,7 @@ void send_client_instruction(t_net *network, t_inst_type type, const char *messa
 		break;
 	}
 
-	send_instruction(network, &instruction);
+	printf("bytes sent : %d\n", send_instruction(network, &instruction));
 	(void)state;
 
 	return;
