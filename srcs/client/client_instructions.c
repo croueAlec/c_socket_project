@@ -1,7 +1,7 @@
 #include "project.h"
 #include "client.h"
 
-int wait_command(t_instruction *instruction)
+int request_wait(t_instruction *instruction)
 {
 	printf("This is the 'Wait' client side command\n");
 
@@ -9,8 +9,8 @@ int wait_command(t_instruction *instruction)
 	return WAIT;
 }
 
-const t_inst_cmd commands[INSTRUCTION_COUNT] = {
-	{WAIT, wait_command},
+const t_inst_req requests[INSTRUCTION_COUNT] = {
+	{WAIT, request_wait},
 	{NONE, NULL		   },
 };
 

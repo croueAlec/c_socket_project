@@ -85,14 +85,14 @@ int send_instruction(t_net *network, t_instruction *instruction)
 int handle_instruction(t_instruction *instruction)
 {
 	size_t i = 0;
-	while (commands[i].command_type != instruction->type) {
-		printf("trying command %d for type %d\n", commands[i].command_type, instruction->type);
-		if (commands[i].command_type == NONE)
+	while (requests[i].command_type != instruction->type) {
+		printf("trying command %d for type %d\n", requests[i].command_type, instruction->type);
+		if (requests[i].command_type == NONE)
 			return -1; // error
 		i++;
 	}
 
-	return (commands[i].handler(instruction));
+	return (requests[i].handler(instruction));
 }
 
 int receive_instruction(t_net *network, const struct pollfd *client)

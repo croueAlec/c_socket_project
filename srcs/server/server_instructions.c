@@ -1,6 +1,6 @@
 #include "project.h"
 
-int action_command(t_instruction *instruction)
+int action_request(t_instruction *instruction)
 {
 	printf("This is the 'Action' server side command\n");
 
@@ -8,7 +8,7 @@ int action_command(t_instruction *instruction)
 	return ACTION;
 }
 
-int login_command(t_instruction *instruction)
+int login_request(t_instruction *instruction)
 {
 	printf("This is the 'Login' server side command\n");
 	printf("Message : %s\n", instruction->message);
@@ -18,7 +18,7 @@ int login_command(t_instruction *instruction)
 	return LOGIN;
 }
 
-int close_command(t_instruction *instruction)
+int close_request(t_instruction *instruction)
 {
 	printf("This is the 'Close' server side command\n");
 
@@ -26,10 +26,10 @@ int close_command(t_instruction *instruction)
 	return CLOSE;
 }
 
-const t_inst_cmd commands[INSTRUCTION_COUNT] = {
-	{CLOSE,	 close_command },
-	{LOGIN,	 login_command },
-	{ACTION, action_command},
+const t_inst_req requests[INSTRUCTION_COUNT] = {
+	{CLOSE,	 close_request },
+	{LOGIN,	 login_request },
+	{ACTION, action_request},
 	{NONE,	 NULL		   },
 };
 

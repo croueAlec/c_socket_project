@@ -25,18 +25,18 @@ typedef struct instruction
 
 } t_instruction;
 
-typedef int (*inst_cmd_handler)(t_instruction *instruction);
+typedef int (*inst_req_handler)(t_instruction *instruction);
 
-typedef struct instruction_command
+typedef struct instruction_request
 {
 	t_inst_type		 command_type;
-	inst_cmd_handler handler;
+	inst_req_handler handler;
 
-} t_inst_cmd;
+} t_inst_req;
 
-extern const t_inst_cmd commands[INSTRUCTION_COUNT];
+extern const t_inst_req requests[INSTRUCTION_COUNT];
 
-void send_client_instruction(t_net *network, t_inst_type type, const char *message, t_game_state *state);
+void send_client_order(t_net *network, t_inst_type type, const char *message, t_game_state *state);
 void send_server_instruction(t_net *network, t_inst_type type, const char *message, t_game_state *state);
 
 int send_instruction(t_net *network, t_instruction *instruction);
