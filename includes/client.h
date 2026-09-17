@@ -27,8 +27,8 @@ int	 establish_connection(t_net *network);
 /* Commands */
 void get_user_string(t_net *network, char *message, size_t size);
 bool handle_cmd(t_net *network, char *cmd);
-void quit(t_net *network);
-void action(t_net *network);
-void login(t_net *network);
+void order_quit(t_net *network);
+void order_action(t_net *network);
+void order_login(t_net *network);
 
 #endif

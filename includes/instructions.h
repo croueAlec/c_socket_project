@@ -12,9 +12,9 @@ typedef enum INSTRUCTION_TYPE
 	WAIT,
 	UNWAIT,
 	ACTION,
-	INSTRUCTION_COUNT, // keep this instruction before SERVER and CLIENT
-	SERVER = 0b10000000,
-	CLIENT = 0b01000000,
+	INSTRUCTION_COUNT, // keep this instruction before SERVER_SIDE and CLIENT_SIDE
+	SERVER_SIDE = 0b10000000,
+	CLIENT_SIDE = 0b01000000,
 } t_inst_type;
 
 typedef struct instruction

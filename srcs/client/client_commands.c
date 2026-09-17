@@ -88,15 +88,15 @@ bool handle_cmd(t_net *network, char *cmd)
 		return true;
 
 	case CLOSE: // quit (close)
-		quit(network);
+		order_quit(network);
 		return false;
 
 	case ACTION: // action
-		action(network);
+		order_action(network);
 		return true;
 
 	case LOGIN: // login
-		login(network);
+		order_login(network);
 		return true;
 	}
 
