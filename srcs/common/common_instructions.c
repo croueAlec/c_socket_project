@@ -85,7 +85,7 @@ int send_instruction(t_net *network, t_instruction *instruction)
 int handle_instruction(t_instruction *instruction)
 {
 	size_t i = 0;
-	while (requests[i].command_type != instruction->type) {
+	while (requests[i].command_type != (instruction->type ^ CLIENT_SIDE)) {
 		printf("trying command %d for type %d\n", requests[i].command_type, instruction->type);
 		if (requests[i].command_type == NONE)
 			return -1; // error
