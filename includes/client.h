@@ -9,8 +9,9 @@ extern t_game_state state;
 
 typedef struct command_name
 {
-	const char letter[COMMAND_NAME_LENGTH];
-	const char string[COMMAND_NAME_LENGTH];
+	const char	letter[COMMAND_NAME_LENGTH];
+	const char	string[COMMAND_NAME_LENGTH];
+	t_inst_type type;
 } t_command_name;
 
 extern const t_command_name command_names[];

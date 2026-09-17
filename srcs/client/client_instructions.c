@@ -16,7 +16,7 @@ const t_inst_cmd commands[INSTRUCTION_COUNT] = {
 
 void quit(t_net *network)
 {
-	send_client_instruction(network, CLOSE, "Close", NULL);
+	send_client_instruction(network, CLOSE, "Close", &state);
 	printf("Quitting...\n");
 }
 

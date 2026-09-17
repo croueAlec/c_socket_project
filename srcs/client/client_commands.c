@@ -2,19 +2,17 @@
 #include "client.h"
 
 const t_command_name command_names[] = {
-	{"q", "quit"  },
-	{"a", "action"},
-	{"l", "login" },
-	{"",  ""	  },
+	{"q", "quit",	CLOSE },
+	{"a", "action", ACTION},
+	{"l", "login",	LOGIN },
+	{"",  "",		NONE  },
 };
 
 static bool compare_commands(const char *cmd, size_t index)
 {
-	size_t len = strlen(cmd);
-
-	if (strncmp(cmd, command_names[index].letter, len) == 0)
+	if (strcmp(cmd, command_names[index].letter) == 0)
 		return true;
-	else if (strncmp(cmd, command_names[index].string, len) == 0)
+	else if (strcmp(cmd, command_names[index].string) == 0)
 		return true;
 	else
 		return false;
@@ -70,34 +68,34 @@ bool handle_cmd(t_net *network, char *cmd)
 {
 	clean_string(cmd);
 
-	int cmd_id = -1;
-	for (size_t i = 0; strlen(command_names[i].letter); i++) {
+	t_inst_type cmd_id = NONE;
+	for (size_t i = 0; command_names[i].type != NONE; i++) {
 		if (strlen(cmd) == 0) {
-			cmd_id = 0;
+			cmd_id = CLOSE;
 			break;
 		}
 
 		if (compare_commands(cmd, i)) {
-			cmd_id = i;
+			cmd_id = command_names[i].type;
 			break;
 		}
 	}
 
 	switch (cmd_id) {
-	case -1:
+	default:
+	case NONE:
 		printf("invalid command : %s\n", cmd);
 		return true;
 
-	case 0: // quit
+	case CLOSE: // quit (close)
 		quit(network);
 		return false;
-		break;
 
-	case 1: // action
+	case ACTION: // action
 		action(network);
 		return true;
 
-	case 2: // login
+	case LOGIN: // login
 		login(network);
 		return true;
 	}
