@@ -12,6 +12,6 @@ void print_pollfd();
 /* Sockets */
 void init_server(t_net *network);
 int	 accept_clients(t_net *network, int nfds);
-void close_client(struct pollfd *clients, int client_index, int nfds);
+int	 close_client(struct pollfd *clients, int client_index, int nfds);
 
 #endif

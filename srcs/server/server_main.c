@@ -35,7 +35,7 @@ void loop(t_net *network)
 			} else {
 				printf("  Descriptor %d is readable\n", clients[i].fd);
 				if (receive_instruction(network, &clients[i]) == CLOSE)
-					close_client(clients, i, nfds);
+					nfds = close_client(clients, i, nfds);
 				break;
 			}
 		}

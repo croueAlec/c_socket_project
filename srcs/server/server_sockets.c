@@ -59,20 +59,25 @@ int accept_clients(t_net *network, int nfds)
 	return nfds;
 }
 
-// TODO: fix close client
-void close_client(struct pollfd *clients, int client_index, int nfds)
+/**
+ * @brief Closes a client's fd and moves the last client pollfd in it's place, erasing it's previous spot
+ *
+ * @param clients the Clients array
+ * @param client_index the closing Client's index
+ * @param nfds the number of open sockets (including the server socket)
+ * @return int (nfds - 1)
+ */
+int close_client(struct pollfd *clients, int client_index, int nfds)
 {
+	nfds--;
+
 	printf("closing client %d\n", clients[client_index].fd);
 	close(clients[client_index].fd);
-	clients[client_index].fd = UNDEFINED_FD;
 
-	for (int i = 0; i < nfds; i++) {
-		if (clients[i].fd == -1) {
-			for (int j = i; j < nfds; j++) {
-				clients[j].fd = clients[j + 1].fd;
-			}
-			i--;
-			nfds--;
-		}
-	}
+	memcpy(&clients[client_index], &clients[nfds], sizeof(struct pollfd));
+
+	bzero(&clients[nfds], sizeof(struct pollfd));
+	clients[nfds].fd = UNDEFINED_FD;
+
+	return nfds;
 }
