@@ -86,7 +86,7 @@ int handle_instruction(t_instruction *instruction)
 {
 	size_t i = 0;
 	while (commands[i].command_type != instruction->type) {
-		printf("trying command %d\n", commands[i].command_type);
+		printf("trying command %d for type %d\n", commands[i].command_type, instruction->type);
 		if (commands[i].command_type == NONE)
 			return -1; // error
 		i++;

@@ -22,7 +22,7 @@ void quit(t_net *network)
 
 void action(t_net *network)
 {
-	send_client_instruction(network, ACTION, "Action", NULL);
+	send_client_instruction(network, ACTION, "Action", &state);
 }
 
 void print_pending_instruction(t_instruction *instruction)
